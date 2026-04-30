@@ -1,0 +1,310 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 100px,
+      rgba(255, 255, 255, 0.02) 100px,
+      rgba(255, 255, 255, 0.02) 101px
+    );
+  pointer-events: none;
+  z-index: -1;
+  animation: subtleMove 20s linear infinite;
+}
+
+@keyframes subtleMove {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(-100px) translateY(-100px); }
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #e0e0e0;
+}
+
+body.dark-mode::before {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+}
+
+body.dark-mode::after {
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 100px,
+      rgba(255, 255, 255, 0.01) 100px,
+      rgba(255, 255, 255, 0.01) 101px
+    );
+}
+
+/* Floating geometric shapes */
+.geometric-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.geometric-bg::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  animation: float1 15s ease-in-out infinite;
+}
+
+.geometric-bg::after {
+  content: '';
+  position: absolute;
+  top: 60%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.03);
+  transform: rotate(45deg);
+  animation: float2 12s ease-in-out infinite reverse;
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translateY(0px) rotate(45deg); }
+  50% { transform: translateY(-15px) rotate(225deg); }
+}
+
+/* Add geometric shapes to body */
+body {
+  position: relative;
+}
+
+body > *:first-child::before {
+  content: '';
+  position: fixed;
+  top: 20%;
+  right: 10%;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.04);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  animation: float3 18s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(120deg); }
+  66% { transform: translateY(-5px) rotate(240deg); }
+}
+
+body.dark-mode .settings-content {
+  background: #2d2d44;
+  color: #e0e0e0;
+}
+
+body.dark-mode .settings-tabs {
+  background: #1e1e2e;
+  border-right-color: #404040;
+}
+
+body.dark-mode .tab-btn {
+  color: #b0b0b0;
+}
+
+body.dark-mode .tab-btn:hover {
+  background: #3a3a4a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .tab-btn.active {
+  background: #2a2a3e;
+  color: #667eea;
+}
+
+body.dark-mode .tab-content h2 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .info-item,
+body.dark-mode .preference-item,
+body.dark-mode .security-item {
+  background: #3a3a4a;
+}
+
+body.dark-mode .info-item label {
+  color: #b0b0b0;
+}
+
+body.dark-mode .info-item p {
+  color: #e0e0e0;
+}
+
+body.dark-mode .preference-info h3,
+body.dark-mode .security-item h3 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .preference-info p,
+body.dark-mode .security-item p {
+  color: #b0b0b0;
+}
+
+body.dark-mode .settings-actions {
+  border-top-color: #404040;
+}
+
+/* Dark mode for other components */
+body.dark-mode .navbar {
+  background: rgba(26, 26, 46, 0.95);
+}
+
+body.dark-mode .dashboard-container,
+body.dark-mode .add-habit-container,
+body.dark-mode .habit-details-container,
+body.dark-mode .history-container,
+body.dark-mode .leaderboard-container,
+body.dark-mode .statistics-container {
+  color: #e0e0e0;
+}
+
+body.dark-mode .habit-card,
+body.dark-mode .calendar-container,
+body.dark-mode .stats-card,
+body.dark-mode .leaderboard-card {
+  background: #2d2d44;
+  color: #e0e0e0;
+}
+
+body.dark-mode .habit-card h3,
+body.dark-mode .stats-card h3 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .calendar-grid {
+  background: #2d2d44;
+}
+
+body.dark-mode .calendar-header {
+  background: #1e1e2e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .calendar-day {
+  background: #3a3a4a;
+  color: #e0e0e0;
+  border-color: #404040;
+}
+
+body.dark-mode .calendar-day.completed {
+  background: #4caf50;
+}
+
+body.dark-mode .calendar-day.today {
+  border-color: #667eea;
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: #3a3a4a;
+  color: #e0e0e0;
+  border-color: #404040;
+}
+
+body.dark-mode input:focus,
+body.dark-mode textarea:focus,
+body.dark-mode select:focus {
+  border-color: #667eea;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+input, textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
