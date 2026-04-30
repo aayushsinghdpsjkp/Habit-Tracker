@@ -2,6 +2,11 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+// Warn if API URL is not set in production
+if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_API_URL) {
+  console.error('REACT_APP_API_URL environment variable is not set. API calls will fail.');
+}
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {

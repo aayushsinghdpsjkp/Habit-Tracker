@@ -75,46 +75,66 @@ npm run build
 3. Create new Web Service
 
 ### Configure Backend Service
-1. **Name**: `habit-tracker-api`
+1. **Name**: `habit-tracker-backend`
 2. **Environment**: `Node`
 3. **Build Command**: `npm install`
 4. **Start Command**: `npm start`
 5. **Plan**: Free tier
 
-### Set Environment Variables
-In Render dashboard:
+### Set Environment Variables (CRITICAL)
+In Render dashboard → Environment tab, add:
 ```
 MONGODB_URI = your_mongodb_connection_string
-JWT_SECRET = your_jwt_secret
+JWT_SECRET = your_jwt_secret_key_here
 NODE_ENV = production
+FRONTEND_URL = https://your-frontend-url.onrender.com
+PORT = 5000
 ```
+
+**Important**: 
+- `MONGODB_URI`: Get from MongoDB Atlas connection string
+- `JWT_SECRET`: Use a long random string (e.g., `openssl rand -base64 32`)
+- `FRONTEND_URL`: Set to your Render frontend URL (e.g., `https://habit-tracker-459n.onrender.com`)
+- `NODE_ENV`: Must be `production` for proper error handling
 
 ### Deploy
 - Push to GitHub
 - Render auto-deploys
-- Get your backend URL: `https://habit-tracker-api.render.com`
+- Get your backend URL: `https://habit-tracker-backend-tan7onrender.com`
 
-## Step 3: Deploy Frontend to Vercel
+## Step 3: Deploy Frontend to Render (Static Site)
 
-### Create Vercel Account
-1. Go to [Vercel.com](https://vercel.com)
-2. Sign up with GitHub
-3. Import project
+### Create Static Site on Render
+1. Go to [Render.com](https://render.com)
+2. Click "New +" → "Static Site"
+3. Connect your GitHub repository
 
 ### Configure Frontend
-1. **Framework**: React
-2. **Build Command**: `npm run build`
-3. **Output Directory**: `build`
+1. **Name**: `habit-tracker-frontend`
+2. **Build Command**: `cd frontend && npm run build`
+3. **Publish Directory**: `frontend/build`
 
-### Set Environment Variables
+### Set Environment Variables (CRITICAL)
+In Render dashboard → Environment tab, add:
 ```
-REACT_APP_API_URL=https://habit-tracker-api.render.com/api
+REACT_APP_API_URL = https://habit-tracker-backend-tan7onrender.com/api
 ```
+
+**Important**: 
+- Replace `habit-tracker-backend-tan7onrender.com` with your actual backend URL
+- This tells the frontend where to send API requests
+- Without this, the frontend will try to call `http://localhost:5000/api` and fail
 
 ### Deploy
 - Connect GitHub repo
-- Vercel auto-deploys on push
-- Get your frontend URL: `https://habit-tracker.vercel.app`
+- Render auto-deploys on push
+- Get your frontend URL: `https://habit-tracker-459n.onrender.com`
+
+### After Deployment
+1. If environment variables were added after initial deploy, trigger a redeploy:
+   - Go to Deploys tab
+   - Click the three dots on latest deploy
+   - Click "Redeploy"
 
 ## Step 4: Setup MongoDB Atlas
 
@@ -129,38 +149,68 @@ REACT_APP_API_URL=https://habit-tracker-api.render.com/api
 2. Create new user
 3. Save username and password
 
-### Whitelist IPs
+### Whitelist IPs (CRITICAL for Render)
 1. Go to Network Access
 2. Add IP Address
-3. For development: Add `0.0.0.0/0` (allow all)
-4. For production: Add specific IPs
+3. **For Render**: Click "Add Current IP" OR add `0.0.0.0/0` to allow all IPs
+   - Render uses dynamic IPs, so `0.0.0.0/0` is recommended for free tier
+   - For production, use Render's static IP if available
 
 ### Get Connection String
 1. Click Connect
 2. Choose "Connect your application"
 3. Copy connection string
-4. Replace `<password>` with your password
+4. Replace `<username>` and `<password>` with your database user credentials
+5. Replace `<database>` with `habit-tracker` (or your preferred name)
+6. Example: `mongodb+srv://user:password@cluster.mongodb.net/habit-tracker?retryWrites=true&w=majority`
 
 ## Step 5: Verify Deployment
 
 ### Test Backend
 ```bash
-curl https://habit-tracker-api.render.com/api/auth/me
-# Should return 401 (no token)
+# Test if backend is running
+curl https://habit-tracker-backend-tan7onrender.com/api/test
+
+# Should return:
+# {"message":"Backend is working!","timestamp":"2024-01-01T12:00:00.000Z"}
 ```
 
 ### Test Frontend
-1. Open `https://habit-tracker.vercel.app`
-2. Register new account
-3. Create habit
-4. Check in
-5. Verify streak works
+1. Open `https://habit-tracker-459n.onrender.com`
+2. Try to register a new account
+3. If you see "Cannot reach server" error:
+   - Check that `REACT_APP_API_URL` is set correctly
+   - Trigger a redeploy of the frontend
+   - Check browser console (F12) for the actual error
 
 ### Test API Integration
 1. Register on frontend
-2. Create habit
-3. Check in
-4. Verify data in MongoDB Atlas
+2. Create a habit
+3. Check in to the habit
+4. Verify data appears in MongoDB Atlas
+
+### Common Issues & Fixes
+
+**Issue**: "Registration failed" or "Cannot reach server"
+- **Cause**: `REACT_APP_API_URL` not set or incorrect
+- **Fix**: 
+  1. Go to Render frontend settings
+  2. Add/update `REACT_APP_API_URL` environment variable
+  3. Trigger a redeploy
+
+**Issue**: Backend returns 500 error
+- **Cause**: `MONGODB_URI` not set or connection failed
+- **Fix**:
+  1. Check Render backend logs
+  2. Verify `MONGODB_URI` is correct
+  3. Check MongoDB Atlas IP whitelist includes `0.0.0.0/0`
+
+**Issue**: CORS error in browser console
+- **Cause**: `FRONTEND_URL` not set on backend
+- **Fix**:
+  1. Go to Render backend settings
+  2. Add `FRONTEND_URL` environment variable
+  3. Restart the backend service
 
 ## Monitoring & Maintenance
 

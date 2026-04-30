@@ -73,19 +73,12 @@ router.post('/:id/check', auth, async (req, res) => {
 
     // Use the EXACT date sent from frontend
     const targetDate = req.body.date;
-    console.log('=== BACKEND DEBUG ===');
-    console.log('Received date from frontend:', targetDate);
-    console.log('Request body:', req.body);
     
     if (!targetDate) {
       return res.status(400).json({ message: 'Date is required' });
     }
 
     const yesterday = new Date(new Date(targetDate).getTime() - 86400000).toISOString().split('T')[0];
-
-    console.log('Target date (will save):', targetDate);
-    console.log('Yesterday calculated:', yesterday);
-    console.log('Current completed dates:', habit.completedDates);
 
     // Prevent multiple check-ins per day
     if (habit.completedDates.includes(targetDate)) {
@@ -107,10 +100,6 @@ router.post('/:id/check', auth, async (req, res) => {
 
     await habit.save();
 
-    console.log('SAVED - lastCompleted:', habit.lastCompleted);
-    console.log('SAVED - completedDates:', habit.completedDates);
-    console.log('=== END DEBUG ===');
-
     res.json({
       message: 'Habit completed',
       habit,
@@ -120,7 +109,6 @@ router.post('/:id/check', auth, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

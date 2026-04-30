@@ -34,8 +34,15 @@ function Settings({ setIsAuthenticated }) {
     try {
       const response = await authAPI.getCurrentUser();
       setUser(response.data);
+      setError('');
     } catch (err) {
-      setError('Failed to fetch user data');
+      if (err.response) {
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        setError('Cannot reach server. Please check your connection.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -75,38 +82,21 @@ function Settings({ setIsAuthenticated }) {
     }
 
     try {
-      console.log('Attempting to change password...');
-      
-      // First test if we can get current user (to verify auth is working)
-      try {
-        const userTest = await authAPI.getCurrentUser();
-        console.log('Auth test successful:', userTest.data);
-      } catch (authError) {
-        console.error('Auth test failed:', authError);
-        setError('Authentication failed. Please log in again.');
-        return;
-      }
-      
       const response = await authAPI.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
-      console.log('Password change response:', response);
       setSuccess('Password changed successfully');
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
       setShowPasswordForm(false);
     } catch (err) {
-      console.error('Password change error:', err);
-      console.error('Error response:', err.response);
-      
       if (err.response?.status === 401) {
         setError('Authentication failed. Please log in again.');
       } else if (err.response?.status === 400) {
         setError(err.response.data.message || 'Invalid request');
       } else if (err.response?.status === 500) {
         setError('Server error. Please try again later.');
-      } else if (err.code === 'NETWORK_ERROR' || !err.response) {
-        setError('Cannot connect to server. Please check if the backend is running.');
+      } else if (err.request) {
+        setError('Cannot reach server. Please check your connection.');
       } else {
-        const errorMessage = err.response?.data?.message || err.message || 'Failed to change password';
-        setError(errorMessage);
+        setError(err.message || 'Failed to change password');
       }
     }
   };

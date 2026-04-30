@@ -17,11 +17,17 @@ function Dashboard() {
   const fetchHabits = async () => {
     try {
       setLoading(true);
+      setError('');
       const response = await habitAPI.getHabits();
       setHabits(response.data);
-      setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch habits');
+      if (err.response) {
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        setError('Cannot reach server. Please check your connection.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

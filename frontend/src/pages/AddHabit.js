@@ -29,7 +29,13 @@ function AddHabit() {
       await habitAPI.createHabit(formData.title, formData.description);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create habit');
+      if (err.response) {
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        setError('Cannot reach server. Please check your connection.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

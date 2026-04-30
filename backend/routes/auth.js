@@ -90,45 +90,35 @@ router.get('/me', auth, async (req, res) => {
 // Change password
 router.put('/change-password', auth, async (req, res) => {
   try {
-    console.log('Password change request received');
     const { currentPassword, newPassword } = req.body;
-    console.log('User ID:', req.userId);
 
     // Validation
     if (!currentPassword || !newPassword) {
-      console.log('Missing password fields');
       return res.status(400).json({ message: 'Please provide current and new password' });
     }
 
     if (newPassword.length < 6) {
-      console.log('Password too short');
       return res.status(400).json({ message: 'New password must be at least 6 characters long' });
     }
 
     // Get user with password
     const user = await User.findById(req.userId);
     if (!user) {
-      console.log('User not found');
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('User found, checking current password');
     // Check current password
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
-      console.log('Current password incorrect');
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
-    console.log('Current password correct, updating password');
     // Update password
     user.password = newPassword;
     await user.save();
 
-    console.log('Password updated successfully');
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
-    console.error('Password change error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

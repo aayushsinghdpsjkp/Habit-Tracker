@@ -37,7 +37,17 @@ function Register({ setIsAuthenticated }) {
       setIsAuthenticated(true);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      if (err.response) {
+        // Backend responded with an error
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        // Request was made but no response received (network error / wrong URL)
+        console.error('Network error:', err.request);
+        setError('Cannot reach server. Please check your connection and try again.');
+      } else {
+        console.error('Error:', err.message);
+        setError(`Error: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }

@@ -24,8 +24,15 @@ function HabitDetails() {
         title: response.data.title,
         description: response.data.description
       });
+      setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch habit');
+      if (err.response) {
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        setError('Cannot reach server. Please check your connection.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -39,7 +46,13 @@ function HabitDetails() {
       setEditing(false);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update habit');
+      if (err.response) {
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        setError('Cannot reach server. Please check your connection.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     }
   };
 
@@ -49,17 +62,31 @@ function HabitDetails() {
         await habitAPI.deleteHabit(id);
         navigate('/dashboard');
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete habit');
+        if (err.response) {
+          setError(err.response.data?.message || `Server error: ${err.response.status}`);
+        } else if (err.request) {
+          setError('Cannot reach server. Please check your connection.');
+        } else {
+          setError('An error occurred. Please try again.');
+        }
       }
     }
   };
 
   const handleCheckIn = async () => {
     try {
-      const response = await habitAPI.checkHabit(id);
+      const todayStr = new Date().toISOString().split('T')[0];
+      const response = await habitAPI.checkHabit(id, todayStr);
       setHabit(response.data.habit);
+      setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Error checking in');
+      if (err.response) {
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        setError('Cannot reach server. Please check your connection.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     }
   };
 
